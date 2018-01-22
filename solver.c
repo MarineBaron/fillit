@@ -6,7 +6,7 @@
 /*   By: mbaron <mbaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/10 16:51:32 by mbaron            #+#    #+#             */
-/*   Updated: 2018/01/21 09:01:42 by mbaron           ###   ########.fr       */
+/*   Updated: 2018/01/22 16:09:04 by mbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,21 @@ static int	calc_grid_size(int pieces_nb)
 	return (i);
 }
 
-int		solver_write_grid(int grid[], int grid_size)
+int			solver_write_grid(int grid[], int grid_size)
 {
 	int		i;
 	int		j;
 
-	//printf("---*---*---*---* %d\n", grid_size);
+	printf("---*---*---*---* %d\n", grid_size);
 	ft_putstr("---*---*---*---* ");
 	ft_putnbr(grid_size);
 	ft_putstr(" \n");
 	i = 0;
 	while (i < grid_size)
 	{
-	   ft_putnbr(grid[i]);
-	   ft_putstr(" ");
-	   i++;
+		ft_putnbr(grid[i]);
+		ft_putstr(" ");
+		i++;
 	}
 	ft_putchar('\n');
 	i = 0;
@@ -67,6 +67,7 @@ static int	solver_init(int grid[], int grid_size, t_piece *pieces,
 	while (i < GRID_MAX)
 	{
 		grid[i] = GRID_ALL_ONE;
+		//printf("solver init i:%d grid[i]:%x\n", i, grid[i]);
 		if (i < grid_size)
 		{
 			j = 0;
@@ -76,6 +77,7 @@ static int	solver_init(int grid[], int grid_size, t_piece *pieces,
 				j++;
 			}
 		}
+		//printf("solver end  i:%d grid[i]:%x\n", i, grid[i]);
 		i++;
 	}
 	i = *p_bt_size;
@@ -102,7 +104,12 @@ int			solver(t_piece pieces[], int pieces_nb)
 		grid_ok = 1;
 		solver_init(grid, grid_size, pieces, &bt_size);
 		while (grid_ok && bt_size != pieces_nb)
+		{
 			grid_ok = solver_add_piece_grid(pieces, &bt_size, grid, grid_size);
+			solver_write_grid(grid,grid_size);
+			printf("solver after : grid_ok:%d grid_size:%d bt_size:%d pieces_nb:%d\n", grid_ok, grid_size, bt_size, pieces_nb);
+		}
+			
 		if (bt_size < pieces_nb)
 			grid_size++;
 	}

@@ -6,7 +6,7 @@
 /*   By: mbaron <mbaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/08 10:02:11 by mbaron            #+#    #+#             */
-/*   Updated: 2018/01/21 08:59:03 by mbaron           ###   ########.fr       */
+/*   Updated: 2018/01/22 15:09:17 by mbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,6 @@ void		init_piece(t_piece *piece)
 {
 	piece->l = -1;
 	piece->c = -1;
-	piece->first = -1;
-	//piece->last = -1;
 	piece->pos = -1;
 }
 
@@ -65,11 +63,18 @@ int			main(int argc, char *argv[])
 	t_piece		pieces[PIECES_NB_MAX];
 	int			pieces_nb;
 	int			grid_size;
+	int			i;
 
 	if (argc != 2)
 		return (put_error(0));
 	init_tetras_lib(tetras_lib);
 	pieces_nb = test_source(argv[1], tetras_lib, pieces);
+	i = 0;
+	while (i < pieces_nb)
+	{
+		printf("main : i:%d piece.pos:%d piece.last:%d\n", i, pieces[i].pos, pieces[i].last);
+		i++;
+	}
 	if (pieces_nb < 1)
 		return (put_error(1));
 	grid_size = solver(pieces, pieces_nb);
