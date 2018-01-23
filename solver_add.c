@@ -6,7 +6,7 @@
 /*   By: mbaron <mbaron@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/01/19 20:13:20 by mbaron            #+#    #+#             */
-/*   Updated: 2018/01/22 18:40:35 by mbaron           ###   ########.fr       */
+/*   Updated: 2018/01/22 22:18:41 by mbaron           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static int		get_next_line_next(t_piece *piece, int grid[], int grid_size)
 			if (i <= grid_size - piece->h)
 			{
 				//printf("continue\n");
-				piece->pos = 16 * (i + 1);
+				piece->pos = (i + 1) << 4;
 				printf("get_next_line next exit1 1: l:%d i:%d pos:%d\n", l, i, piece->pos);
 				return (1);
 			}
@@ -162,9 +162,7 @@ static int		get_next_position(t_piece *pieces, int bt_size, int grid[],
 	int grid_size)
 {
 	t_piece	*p;
-	//int		test;
-	
-	
+
 	p = &pieces[bt_size];
 	printf("---- get_next_position : bt:%d n:%d pos:%d\n", bt_size, p->n, p->pos);
 	if (p->pos >= p->last)
@@ -179,9 +177,10 @@ static int		get_next_position(t_piece *pieces, int bt_size, int grid[],
 		if (p->pos % 16 + p->w == grid_size)
 		{
 			printf("    ici \n");
-			if (((p->pos >> 4) & 0xF) >= grid_size - p->h)
+			if (p->pos / 16 >= grid_size - p->h)
 			{
 				printf("exit -1 2: pos:%d last:%d\n", p->pos, p->last);
+				p->pos = p->last;
 				return (-1);
 			}
 			p->pos += 16 - grid_size + p->w;
@@ -192,30 +191,6 @@ static int		get_next_position(t_piece *pieces, int bt_size, int grid[],
 	// test = test_piece_grid(p, grid, grid_size);
 	// printf("test : %d pos:%d last:%d\n", test, p->pos, p->last);
 	return (test_piece_grid(p, grid, grid_size));
-	// return (test);
-	/*
-	if (get_next_line_next(p, grid))
-	;
-	if (p->l != l_next)
-	{
-		//printf("get_next_position gs:%d p:%d last:%d l:%d l_next:%d gs-p->h:%d\n", grid_size, bt_size, p->last, p->l, l_next, grid_size - p->h);
-
-		if (l_next <= grid_size - p->h)
-		{
-			//printf("continue\n");
-			p->l = l_next;
-			p->c = 0;
-		}
-		else
-		{
-			//printf("exit\n");
-			p->pos = p->last;
-			return(0);
-		}
-	}
-	p->pos = 16 * p->l + p->c;
-	return (test_piece_grid(p, p->l, p->c, grid));
-	*/
 }
 
 int				solver_add_piece_grid(t_piece *pieces, int *p_bt_size,
@@ -238,16 +213,16 @@ int				solver_add_piece_grid(t_piece *pieces, int *p_bt_size,
 			printf("solver_add_piece_grid : grid_size:%d h:%d w:%d last:%d\n", grid_size , piece->h, piece->w, piece->last);
 		}
 		else
-		{	
+		{
 			piece->pos = pieces[*p_bt_size].pos;
 			piece->last = pieces[*p_bt_size].last;
-		}	
+		}
 		//piece->last = get_last_position(pieces, *p_bt_size, grid, grid_size);
 	}
 	printf("solver_add_piece_grid : pos:%d last:%d\n", piece->pos, piece->last);
 	//exit(1);
 	next = 0;
-	while (!next && piece->pos <= piece->last)
+	while (!next)
 	{
 		printf("solver_add_piece_grid --> before next pos:%d last:%d\n", piece->pos, piece->last);
 		next = get_next_position(pieces, *p_bt_size, grid, grid_size);
@@ -256,7 +231,7 @@ int				solver_add_piece_grid(t_piece *pieces, int *p_bt_size,
 	// next = (piece->last == -1 || (piece->last > -1
 	// 	&& piece->pos == piece->last))
 	// 	? 0 : get_next_position(pieces, *p_bt_size, grid, grid_size);
-	if (next)
+	if (next == 1)
 	{
 		printf("solver_add_piece_grid next = 1 : pos:%d last:%d\n", piece->pos, piece->last);
 		toggle_piece_grid(piece, grid);
@@ -269,7 +244,7 @@ int				solver_add_piece_grid(t_piece *pieces, int *p_bt_size,
 		printf("solver_add_piece_grid next = 1 : pos:%d last:%d\n", piece->pos, piece->last);
 		return (1);
 	}
-	else 
+	else if (piece->pos >= piece->last)
 	{
 		//printf("remove %d n:%d l:%d c:%d pos:%d last:%d\n", *p_bt_size, piece->n, piece->l, piece->c, piece->pos, piece->last);
 		init_piece(&pieces[*p_bt_size]);
